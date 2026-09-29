@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Python virtual environments and caches
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+**/.pytest_cache/
+*.egg-info/
+**/*.egg-info/
+
+# Next.js build output
+.next/
+**/.next/
+
+# CDK synthesized output
+cdk.out/
+**/cdk.out/
+
+# Build artifacts
+dist/
+**/dist/
+*.tsbuildinfo
+
+# Logs and temp
+*.log
+.DS_Store
+
+# Environment / secrets (never commit)
+.env
+**/.env
+*.pem
+*.key
+credentials

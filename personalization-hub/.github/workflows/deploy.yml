@@ -1,0 +1,72 @@
+name: Deploy Personalization Hub
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # for OIDC role assumption
+  contents: read
+
+env:
+  AWS_REGION: us-east-2
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Recommendation service tests (unit + property-based)
+        working-directory: services/recommendation
+        run: |
+          pip install -e ".[dev]"
+          pytest -q
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: User profile service tests (unit + property-based)
+        working-directory: services/user-profile
+        run: |
+          npm install
+          npm run build
+          npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install CDK deps
+        working-directory: infra
+        run: npm install
+
+      # cdk deploy builds/pushes SHA-tagged images to ECR and updates ECS task
+      # definitions. The ECS deployment circuit breaker performs ALB /healthz
+      # health checks and automatically rolls back on failure.
+      - name: CDK deploy
+        working-directory: infra
+        run: |
+          npm run build
+          npx cdk deploy --all --require-approval never --concurrency 3

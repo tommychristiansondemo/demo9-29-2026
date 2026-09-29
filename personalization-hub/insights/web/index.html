@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personalization Hub — Insights</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Personalization Hub — Insights</h1>
+    <p class="sub">A companion app for the "Generative AI Development on AWS" class. Ask about the design and deployment, or inspect live LLM reasoning logs.</p>
+  </header>
+
+  <main>
+    <section class="panel chat-panel">
+      <h2>Ask the Insights Assistant</h2>
+      <p class="hint">Backed by Amazon Bedrock (Claude), grounded in the project knowledge base. Try: "What architecture does the Personalization Hub use?" or "Show me recent LLM reasoning logs."</p>
+      <div id="chat" class="chat-log"></div>
+      <form id="chat-form">
+        <input id="question" type="text" placeholder="Ask a question about the deployment..." autocomplete="off" />
+        <button type="submit" id="ask-btn">Ask</button>
+      </form>
+    </section>
+
+    <section class="panel logs-panel">
+      <div class="logs-head">
+        <h2>LLM Reasoning Logs</h2>
+        <button id="refresh-logs">Refresh</button>
+      </div>
+      <p class="hint">Every LLM prompt/response from the recommendation explainer and this chatbot is logged for auditability. No secrets are shown.</p>
+      <div id="logs" class="logs-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="config-note"></span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
